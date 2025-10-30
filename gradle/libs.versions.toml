@@ -1,0 +1,101 @@
+# gradle/libs.versions.toml
+
+[versions]
+# Core & Lifecycle
+androidxCore = "1.13.1"
+androidxLifecycle = "2.8.0" # Inclui runtime-ktx, viewmodel-ktx, runtime-compose
+activityCompose = "1.9.0"
+
+# Compose
+composeBom = "2024.05.00" # Bill of Materials para Compose
+composeCompiler = "1.5.3" # Verifique a compatibilidade com sua versão do Kotlin!
+materialIcons = "1.6.7" # Para icons-extended
+
+# Navigation
+navigationCompose = "2.7.7"
+
+# Hilt
+hilt = "2.51.1" # Versão do plugin e bibliotecas
+hiltNavigationCompose = "1.2.0"
+
+# Coroutines
+coroutines = "1.8.1"
+
+# Networking
+retrofit = "2.9.0" # Ou 2.11.0 se usar Java 11+
+converterGson = "2.9.0" # Ou 2.11.0
+okhttp = "4.12.0" # Ou 5.0.0-alpha.x
+
+# Image Loading
+coil = "2.6.0"
+
+# Maps (Opcional - se for usar depois)
+# mapsCompose = "4.3.3"
+
+# Testes
+junit = "4.13.2"
+androidxJunit = "1.1.5"
+espressoCore = "3.5.1"
+
+# Gradle Plugins (Certifique-se que já existem ou adicione)
+androidApplication = "8.4.1" # Use a versão do seu Android Gradle Plugin
+kotlinAndroid = "1.9.10"
+
+
+[libraries]
+# ----- CORE & LIFECYCLE -----
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+
+# ----- COMPOSE -----
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" } # Versão gerenciada pelo BOM
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIcons"}
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text" }
+
+# ----- NAVIGATION COMPOSE -----
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+
+# ----- HILT -----
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+# ----- COROUTINES -----
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# ----- NETWORKING -----
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" } # Interceptor de Log do OkHttp
+
+# ----- IMAGE LOADING -----
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
+# ----- (Opcional) MAPS -----
+# maps-compose = { group = "com.google.maps.android", name="maps-compose", version.ref = "mapsCompose" }
+
+# ----- TESTES -----
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+
+
+[plugins]
+# Certifique-se que estes existem (ajuste as versões se necessário)
+android-application = { id = "com.android.application", version.ref = "androidApplication" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinAndroid" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
