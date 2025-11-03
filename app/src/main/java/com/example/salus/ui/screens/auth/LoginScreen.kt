@@ -74,18 +74,18 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.spacedBy(75.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(250.dp)
                     .height(25.dp)
             ) {
                 Text(
-                    text = "LOG IN",
+                    text = "Entrar",
                     color = Branco, // Cor Branca 100%
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge
                     // Adicionar sublinhado ou outro indicador se houver no design
                 )
                 Text(
-                    text = "SIGN UP",
+                    text = "Cadastrar",
                     color = Branco.copy(alpha = 0.75f), // Cor Branca 75%
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
@@ -104,8 +104,6 @@ fun LoginScreen(
                 keyboardType = KeyboardType.Email
             )
 
-            Spacer(modifier = Modifier.padding(top = 15.dp))
-
             // Campo Senha
             SalusTextField(
                 value = senha,
@@ -121,7 +119,7 @@ fun LoginScreen(
             // Botão Login
             SalusButton(
                 onClick = { onLoginClick(email, senha) }, // Chama a função de login
-                text = "LOG IN",
+                text = "Entrar",
                 color = MaterialTheme.colorScheme.primary
             )
 

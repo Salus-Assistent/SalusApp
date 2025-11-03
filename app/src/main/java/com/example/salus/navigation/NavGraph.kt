@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.salus.ui.screens.SplashScreen // Import real
+import com.example.salus.ui.screens.auth.ForgotPasswordScreen1
+import com.example.salus.ui.screens.auth.ForgotPasswordScreen2
 import com.example.salus.ui.screens.auth.LoginScreen // Import real
 import com.example.salus.ui.screens.auth.SignUpScreen // <<< IMPORT NOVO E REAL
 import com.example.salus.ui.screens.paciente.*
@@ -59,18 +61,43 @@ fun NavGraph(
             )
         }
 
-        // 3. SignUp (Substituindo o Placeholder)
         composable(AppScreens.SignUp.route) {
-            SignUpScreen( // <<< USANDO A TELA REAL
+            SignUpScreen(
                 onSignUpClick = {
                     // TODO: Lógica de Cadastro (Chamar ViewModel)
-                },
-                onLoginClick = {
-                    // Navega de volta para o Login e limpa a pilha
+                    // Por agora, podemos navegar de volta ao Login
                     navController.navigate(AppScreens.Login.route) {
                         popUpTo(AppScreens.Login.route) { inclusive = true }
                     }
+                },
+                onLoginClick = {
+                    // Navega de volta para o Login
+                    navController.popBackStack()
                 }
+            )
+        }
+
+        composable(AppScreens.ForgotPassword1.route) {
+            ForgotPasswordScreen1(
+                onConfirmClick = {
+                    // Navega para o Ecrã 2
+                    navController.navigate(AppScreens.ForgotPassword2.route)
+                },
+                onLoginClick = { navController.navigate(AppScreens.Login.route) },
+                onSignUpClick = { navController.navigate(AppScreens.SignUp.route) }
+            )
+        }
+
+        composable(AppScreens.ForgotPassword2.route) {
+            ForgotPasswordScreen2(
+                onConfirmClick = {
+                    // Volta para o Login e limpa a pilha de "esqueceu senha"
+                    navController.navigate(AppScreens.Login.route) {
+                        popUpTo(AppScreens.Login.route) { inclusive = true }
+                    }
+                },
+                onLoginClick = { navController.navigate(AppScreens.Login.route) },
+                onSignUpClick = { navController.navigate(AppScreens.SignUp.route) }
             )
         }
 
@@ -131,21 +158,21 @@ fun NavGraph(
             PerfilScreenCuidador(navController = navController)
         }
         composable(AppScreens.EditarPerfil.route) {
-            // TODO: Implementar UI
-            Text("Ecrã Editar Perfil (Placeholder)")
+            EditarPerfilScreen(navController = navController)
         }
+
         composable(AppScreens.GerirCuidadores.route) {
-            // TODO: Implementar UI
-            Text("Ecrã Gerir Cuidadores (Placeholder)")
+            GerirCuidadoresScreen(navController = navController)
         }
+
         composable(AppScreens.AjudaTutorial.route) {
-            // TODO: Implementar UI
-            Text("Ecrã Ajuda & Tutorial (Placeholder)")
+            AjudaTutorialScreen(navController = navController)
         }
+
         composable(AppScreens.PrivacidadeTermos.route) {
-            // TODO: Implementar UI
-            Text("Ecrã Privacidade & Termos (Placeholder)")
+            PrivacidadeTermosScreen(navController = navController)
         }
+
         composable(AppScreens.CalendarioPaciente.route) {
             CalendarioScreenPaciente(navController = navController)
         }

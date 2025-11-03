@@ -74,7 +74,7 @@ fun MapaScreenCuidador(navController: NavHostController) {
             bpm = bpmSimuladoPaciente,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 90.dp) // <<< Padding para ficar ACIMA da barra de navegação
+                .padding(bottom = 90.dp)
                 .padding(horizontal = 16.dp)
         )
 
@@ -92,7 +92,7 @@ fun MapaScreenCuidador(navController: NavHostController) {
         SalusVoiceFAB(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = (-20).dp),
+                .offset(y = (-10).dp),
             onClick = { /* TODO: Lógica de voz */ }
         )
     }

@@ -28,12 +28,14 @@ import com.example.salus.ui.components.SalusButton
 import com.example.salus.ui.components.SalusTextField
 import com.example.salus.ui.theme.Branco // Importe a cor Branca
 import com.example.salus.ui.theme.SalusTheme
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 // Precisamos desta anotação para o ExposedDropdownMenuBox
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    onSignUpClick: (/* TODO: Passar dados do formulário */) -> Unit,
+    onSignUpClick: () -> Unit,
     onLoginClick: () -> Unit // Função para navegar de volta para Login
 ) {
     // Estados para todos os campos do formulário
@@ -73,7 +75,8 @@ fun SignUpScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
-                .fillMaxHeight(), // Garante que a coluna tente preencher a altura
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),// Garante que a coluna tente preencher a altura
             horizontalAlignment = Alignment.CenterHorizontally,
             // Usamos SpaceAround para distribuir melhor os elementos na vertical
         ) {
@@ -90,10 +93,10 @@ fun SignUpScreen(
             // Abas de Seleção (Invertidas)
             Row(
                 modifier = Modifier.padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(61.dp, Alignment.CenterHorizontally)
+                horizontalArrangement = Arrangement.spacedBy(75.dp, Alignment.CenterHorizontally)
             ) {
                 Text(
-                    text = "LOG IN",
+                    text = "Entrar",
                     color = Branco.copy(alpha = 0.75f), // 75%
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
@@ -102,7 +105,7 @@ fun SignUpScreen(
                 )
 
                 Text(
-                    text = "SIGN UP",
+                    text = "Cadastrar",
                     color = Branco, // 100%
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge
@@ -198,10 +201,10 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botão Sign Up
+            // Botão Cadastrar
             SalusButton(
-                onClick = { /* TODO: Chamar onSignUpClick com os dados */ },
-                text = "SIGN UP",
+                onClick = { onSignUpClick() },
+                text = "Cadastrar",
                 color = MaterialTheme.colorScheme.primary
             )
         }
