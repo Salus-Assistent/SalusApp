@@ -1,2 +1,292 @@
-package com.example.salus.ui.screens.cuidador
+package com.example.salus.ui.screens.cuidador // Ajuste o pacote se necessário
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GpsFixed
+import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.salus.R
+import com.example.salus.navigation.AppScreens
+import com.example.salus.ui.components.SalusBottomBar
+import com.example.salus.ui.components.SalusVoiceFAB
+import com.example.salus.ui.theme.AzulGradienteFim
+import com.example.salus.ui.theme.AzulGradienteInicio
+import com.example.salus.ui.theme.SalusTheme
+import com.example.salus.ui.theme.VermelhoGradienteFim
+import com.example.salus.ui.theme.VermelhoGradienteInicio
+
+// TODO: Implementar os componentes internos (HeaderCuidador, VisorBPMPaciente, etc.)
+
+@Composable
+fun HomeScreenCuidador(navController: NavHostController) {
+    val nomeUsuario = "Mateus Kenji"
+    var bpmSimulado by remember { mutableStateOf((68..75).random()) }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // --- LAYOUT MANUAL COM BOX ---
+    // 1. O Scaffold é substituído por um Box principal
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background) // FundoClaro
+    ) {
+
+        // 2. O conteúdo do ecrã (Column rolável)
+        // (Este é o código que você já tinha, mas com padding inferior ajustado)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState())
+                // Adiciona padding em baixo para o conteúdo não ficar
+                // escondido atrás da barra (60dp da barra + 24dp de espaço)
+                .padding(bottom = 84.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(30.dp))
+            HeaderCuidador(nomeUsuario = nomeUsuario)
+            Spacer(modifier = Modifier.height(30.dp))
+            VisorBPM(bpm = bpmSimulado)
+            Spacer(modifier = Modifier.height(30.dp))
+            BotaoRegistros(onClick = { navController.navigate(AppScreens.RegistrosCuidador.route) })
+            Spacer(modifier = Modifier.height(30.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                BotaoNavegacaoPequeno(
+                    texto = "Remédios",
+                    icone = Icons.Default.Medication,
+                    onClick = { navController.navigate(AppScreens.RemediosCuidador.route) },
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                BotaoNavegacaoPequeno(
+                    texto = "Mapa",
+                    icone = Icons.Default.GpsFixed,
+                    onClick = { navController.navigate(AppScreens.MapaCuidador.route) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Spacer(modifier = Modifier.height(30.dp))
+            BotaoChatbot(onClick = { navController.navigate(AppScreens.ChatbotCuidador.route) })
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        // 3. A Barra de Navegação (MANUAL)
+        // Alinhamos na base do Box (fica por cima da Column)
+        SalusBottomBar(
+            modifier = Modifier.align(Alignment.BottomCenter), // Alinha na base
+            currentRoute = currentRoute,
+            onHomeClick = {
+                navController.navigate(AppScreens.HomeCuidador.route) { popUpTo(AppScreens.HomeCuidador.route) { inclusive = true } }
+            },
+            onCalendarClick = { navController.navigate(AppScreens.CalendarioCuidador.route) },
+            onNotificationsClick = { navController.navigate(AppScreens.NotificacoesCuidador.route) },
+            onSettingsClick = { navController.navigate(AppScreens.PerfilCuidador.route) }
+        )
+
+        // 4. O Botão FAB (MANUAL)
+        // Alinhamos na base e centro do Box (fica por cima de tudo)
+        SalusVoiceFAB(
+            modifier = Modifier
+                .align(Alignment.BottomCenter) // Alinha na base e centro
+                // Puxamos para cima metade da altura da barra (60dp / 2 = 30dp)
+                // para o centro do FAB ficar na linha
+                .offset(y = (-20).dp),
+            onClick = { /* TODO: Lógica de voz */ }
+        )
+    }
+}
+
+// --- Cole aqui os seus Componentes Internos Privados ---
+// (HeaderPaciente, BotaoAlerta, VisorBPM, BotaoNavegacaoPequeno, BotaoChatbot)
+// ...
+@Composable
+private fun HeaderCuidador(nomeUsuario: String) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = "Olá, seja bem-vindo",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = nomeUsuario,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
+
+@Composable
+private fun BotaoRegistros(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(125.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                color = MaterialTheme.colorScheme.surface
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.registros),
+                contentDescription = null,
+                modifier = Modifier.size(50.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = "Registros",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = AzulGradienteFim
+            )
+        }
+    }
+}
+
+@Composable
+private fun VisorBPM(bpm: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(125.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                Brush.horizontalGradient(
+                    colors = listOf(AzulGradienteInicio, AzulGradienteFim)
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.batimentos),
+                contentDescription = null,
+                modifier = Modifier.height(50.dp),
+                contentScale = ContentScale.Fit,
+                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
+            )
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = "$bpm",
+                    style = MaterialTheme.typography.displayLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    lineHeight = 1.em
+                )
+                Text(
+                    text = "bpm",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun BotaoNavegacaoPequeno(
+    texto: String,
+    icone: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.height(100.dp),
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Icon(imageVector = icone, contentDescription = null, tint = AzulGradienteInicio)
+            Text(
+                text = texto,
+                fontWeight = FontWeight.Bold,
+                color = AzulGradienteFim
+            )
+        }
+    }
+}
+
+@Composable
+private fun BotaoChatbot(onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp),
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "SalusAI",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = AzulGradienteFim
+            )
+            Image(
+                painter = painterResource(id = R.drawable.sia),
+                contentDescription = "Avatar SalusAI",
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(16.dp))
+            )
+        }
+    }
+}

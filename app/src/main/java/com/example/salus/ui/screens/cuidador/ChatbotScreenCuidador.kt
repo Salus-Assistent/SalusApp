@@ -1,4 +1,4 @@
-package com.example.salus.ui.screens.common // Ajuste o pacote se necessário
+package com.example.salus.ui.screens.cuidador // Ajuste o pacote se necessário
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,7 +38,7 @@ val welcomeMessage = ChatMessage(
 // ------------------------------------
 
 @Composable
-fun ChatbotScreen(navController: NavHostController) {
+fun ChatbotScreenCuidador(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -135,10 +135,10 @@ fun ChatbotScreen(navController: NavHostController) {
         SalusBottomBar(
             modifier = Modifier.align(Alignment.BottomCenter),
             currentRoute = currentRoute,
-            onHomeClick = { navController.navigate(AppScreens.HomePaciente.route) },
-            onCalendarClick = { navController.navigate(AppScreens.CalendarioPaciente.route) },
-            onNotificationsClick = { navController.navigate(AppScreens.NotificacoesPaciente.route) },
-            onSettingsClick = { navController.navigate(AppScreens.PerfilPaciente.route) }
+            onHomeClick = { navController.navigate(AppScreens.HomeCuidador.route) },
+            onCalendarClick = { navController.navigate(AppScreens.CalendarioCuidador.route) },
+            onNotificationsClick = { navController.navigate(AppScreens.NotificacoesCuidador.route) },
+            onSettingsClick = { navController.navigate(AppScreens.PerfilCuidador.route) }
         )
 
         // 3. O Botão FAB (MANUAL)

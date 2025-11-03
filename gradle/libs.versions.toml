@@ -29,8 +29,9 @@ okhttp = "4.12.0" # Ou 5.0.0-alpha.x
 # Image Loading
 coil = "2.6.0"
 
-# Maps (Opcional - se for usar depois)
-# mapsCompose = "4.3.3"
+# Maps
+playServicesMaps = "18.2.0"
+mapsCompose = "4.3.3"
 
 # Testes
 junit = "4.13.2"
@@ -92,7 +93,9 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
-
+# ----- GOOGLE MAPS -----
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
 
 [plugins]
 # Certifique-se que estes existem (ajuste as versões se necessário)

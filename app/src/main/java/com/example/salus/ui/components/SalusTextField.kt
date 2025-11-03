@@ -2,6 +2,7 @@ package com.example.salus.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,8 +45,9 @@ fun SalusTextField(
         onValueChange = onValueChange,
         modifier = modifier
             .fillMaxWidth()
-            .height(55.dp)
-            .padding(vertical = 2.dp),
+//            .height(55.dp),
+            .heightIn(min = 56.dp),
+//            .padding(vertical = 2.dp),
         label = { Text(text = labelText, color = AuthIconeCampo) },
         leadingIcon = { Icon(imageVector = leadingIcon, contentDescription = null, tint = AuthIconeCampo) },
         shape = RoundedCornerShape(15.dp),
@@ -79,37 +81,4 @@ fun SalusTextField(
         visualTransformation = visualTransformation
         // keyboardActions = KeyboardActions(...) // Você pode adicionar isso se precisar lidar com o clique no botão de ação do teclado
     )
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun SalusTextFieldPreview() {
-    SalusTheme {
-        // Usamos 'remember' para simular o estado do texto no preview
-        var text by remember { mutableStateOf("") }
-        SalusTextField(
-            value = text,
-            onValueChange = { text = it },
-            labelText = "Digite seu E-mail",
-            leadingIcon = Icons.Default.Email, // Exemplo com ícone de email
-
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SalusTextFieldPasswordPreview() {
-    SalusTheme {
-        var text by remember { mutableStateOf("") }
-        SalusTextField(
-            value = text,
-            onValueChange = { text = it },
-            labelText = "Senha",
-            leadingIcon = Icons.Default.Lock, // Exemplo com ícone de cadeado
-            keyboardType = KeyboardType.Password,
-            visualTransformation = PasswordVisualTransformation()
-        )
-    }
 }

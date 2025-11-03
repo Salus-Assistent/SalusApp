@@ -97,15 +97,16 @@ dependencies {
     // ----- IMAGE LOADING (Coil) -----
     implementation(libs.coil.compose)
 
-    // ----- (Opcional - Para depois) MAPS -----
-    // implementation(libs.maps.compose) // Exemplo: Google Maps Compose library
-
     // ----- TESTES -----
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
+    // ----- GOOGLE MAPS -----
+    implementation("com.google.android.gms:play-services-maps:+")
+    implementation(libs.maps.compose)
 }
 
 // Permitir erros de duplicação que o Kapt/Hilt podem causar (geralmente necessário)
