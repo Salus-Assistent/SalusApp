@@ -21,23 +21,22 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.salus.R
 import com.example.salus.navigation.AppScreens
 import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.*
+import com.example.salus.viewmodel.CuidadorSharedViewModel
 
 // Ponto central para o mapa (mesmo do paciente)
 val localizacaoPacienteSimulada = LatLng(-23.528113252597624, -46.691858318684694)
 
 @Composable
-fun MapaScreenCuidador(navController: NavHostController) {
+fun MapaScreenCuidador(navController: NavHostController, sharedViewModel: CuidadorSharedViewModel) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 

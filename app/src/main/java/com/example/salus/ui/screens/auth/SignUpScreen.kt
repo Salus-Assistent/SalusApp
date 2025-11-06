@@ -30,15 +30,19 @@ import com.example.salus.ui.theme.Branco // Importe a cor Branca
 import com.example.salus.ui.theme.SalusTheme
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.PersonSearch
+import com.example.salus.ui.components.CorBordaCampo
+import com.example.salus.ui.components.CorFundoCampo
+import com.example.salus.ui.theme.AuthIconeCampo
 
 // Precisamos desta anotação para o ExposedDropdownMenuBox
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    onSignUpClick: () -> Unit,
+    onSignUpClick: (userRole: String) -> Unit,
     onLoginClick: () -> Unit // Função para navegar de volta para Login
 ) {
-    // Estados para todos os campos do formulário
+    //Estados para todos os campos do formulário
     var nomeCompleto by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
@@ -46,9 +50,18 @@ fun SignUpScreen(
     var telefone by remember { mutableStateOf("") }
 
     // Estados para o campo de seleção (Dropdown)
-    var isExpanded by remember { mutableStateOf(false) }
-    var tipoConta by remember { mutableStateOf("Selecionar") } // Texto inicial
+    var isDropdownExpanded by remember { mutableStateOf(false) }
     val tiposDeConta = listOf("Paciente", "Cuidador")
+    var tipoContaSelecionado by remember { mutableStateOf("Selecionar") }
+
+    //Lógica de Validação
+//    val senhasCoincidem = senha.isNotBlank() && senha == confirmarSenha
+//    val isFormValid = nomeCompleto.isNotBlank() &&
+//            email.isNotBlank() &&
+//            telefone.isNotBlank() &&
+//            senhasCoincidem &&
+//            tipoContaSelecionado != "Selecionar"
+    val isFormValid = tipoContaSelecionado != "Selecionar"
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Imagem de Fundo (mesma da LoginScreen)
@@ -156,43 +169,46 @@ fun SignUpScreen(
 
             // --- Campo de Seleção (Dropdown) ---
             ExposedDropdownMenuBox(
-                expanded = isExpanded,
-                onExpandedChange = { isExpanded = !isExpanded },
-                modifier = Modifier.padding(vertical = 8.dp)
+                expanded = isDropdownExpanded,
+                onExpandedChange = { isDropdownExpanded = !isDropdownExpanded },
             ) {
-                // O TextField que aparece como campo de seleção
                 OutlinedTextField(
-                    value = tipoConta,
+                    value = tipoContaSelecionado,
                     onValueChange = {},
-                    readOnly = true, // Impede digitação
+                    readOnly = true,
                     label = { Text("Tipo de Conta") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
+                    leadingIcon = { Icon(Icons.Default.PersonSearch, contentDescription = null, tint = AuthIconeCampo) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded) },
+                    shape = RoundedCornerShape(size = 15.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        // Reutilizando as cores do SalusTextField
-                        unfocusedContainerColor = Color(0xFFD9D9D9),
-                        focusedContainerColor = Color(0xFFD9D9D9),
-                        unfocusedBorderColor = Color(0x26000000),
-                        focusedBorderColor = com.example.salus.ui.theme.AuthIconeCampo,
-                        focusedLabelColor = com.example.salus.ui.theme.AuthIconeCampo,
-                        unfocusedLabelColor = com.example.salus.ui.theme.AuthIconeCampo.copy(alpha = 0.7f),
-                        focusedTextColor = Color.Black, // Ajuste se necessário
-                        unfocusedTextColor = Color.Black
+                        unfocusedContainerColor = CorFundoCampo,
+                        focusedContainerColor = CorFundoCampo,
+                        errorContainerColor = CorFundoCampo,
+                        unfocusedBorderColor = CorBordaCampo,
+                        focusedBorderColor = AuthIconeCampo,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = AuthIconeCampo,
+                        focusedLabelColor = AuthIconeCampo,
+                        unfocusedLabelColor = AuthIconeCampo.copy(alpha = 0.7f),
+                        focusedLeadingIconColor = AuthIconeCampo,
+                        unfocusedLeadingIconColor = AuthIconeCampo
                     ),
-                    shape = RoundedCornerShape(15.dp),
-                    modifier = Modifier.fillMaxWidth().menuAnchor() // Necessário para o dropdown
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
                 )
 
-                // O menu que aparece quando clicado
                 ExposedDropdownMenu(
-                    expanded = isExpanded,
-                    onDismissRequest = { isExpanded = false }
+                    expanded = isDropdownExpanded,
+                    onDismissRequest = { isDropdownExpanded = false }
                 ) {
-                    tiposDeConta.forEach { item ->
+                    tiposDeConta.forEach { tipo ->
                         DropdownMenuItem(
-                            text = { Text(item) },
+                            text = { Text(tipo) },
                             onClick = {
-                                tipoConta = item
-                                isExpanded = false
+                                tipoContaSelecionado = tipo
+                                isDropdownExpanded = false
                             }
                         )
                     }
@@ -203,8 +219,9 @@ fun SignUpScreen(
 
             // Botão Cadastrar
             SalusButton(
-                onClick = { onSignUpClick() },
+                onClick = { onSignUpClick(tipoContaSelecionado) },
                 text = "Cadastrar",
+                enabled = isFormValid,
                 color = MaterialTheme.colorScheme.primary
             )
         }

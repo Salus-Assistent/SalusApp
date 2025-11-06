@@ -33,13 +33,18 @@ import com.example.salus.navigation.AppScreens
 import com.example.salus.ui.components.SalusBottomBar // <-- Importa o componente
 import com.example.salus.ui.components.SalusVoiceFAB // <-- Importa o componente
 import com.example.salus.ui.theme.*
+import com.example.salus.viewmodel.HomePacienteViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @Composable
-fun HomeScreenPaciente(navController: NavHostController) {
-    val nomeUsuario = "Mateus Kenji"
-    var bpmSimulado by remember { mutableStateOf((68..75).random()) }
+fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePacienteViewModel = hiltViewModel()) {
+    val nomeUsuario by viewModel.nomeUsuario.collectAsState()
+    val bpmSimulado by viewModel.bpmSimulado.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    //val currentRoute = navBackStackEntry?.destination?.route
+    val currentRoute = AppScreens.HomePaciente.route
 
     // --- LAYOUT MANUAL COM BOX ---
     // 1. O Scaffold é substituído por um Box principal

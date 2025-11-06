@@ -15,11 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.salus.ui.theme.*
+import com.example.salus.viewmodel.CuidadorSharedViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -40,7 +39,10 @@ val eventosSimulados = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarioScreenCuidador(navController: NavHostController) {
+fun CalendarioScreenCuidador(
+    navController: NavHostController,
+    sharedViewModel: CuidadorSharedViewModel
+) {
 
     val datePickerState = rememberDatePickerState()
 

@@ -37,6 +37,7 @@ import com.example.salus.navigation.AppScreens
 import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.*
+import com.example.salus.viewmodel.CuidadorSharedViewModel
 
 // --- Dados Simulados (Copie do RemediosScreenPaciente se precisar) ---
 data class RemedioSimulado(
@@ -89,7 +90,10 @@ data class ConsultaFormData(
 // ------------------------------------
 
 @Composable
-fun RemediosScreenCuidador(navController: NavHostController) {
+fun RemediosScreenCuidador(
+    navController: NavHostController,
+    sharedViewModel: CuidadorSharedViewModel
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 

@@ -6,6 +6,7 @@ package com.example.salus.navigation
 sealed class AppScreens(val route: String) {
     // Fluxo Inicial
     object Splash : AppScreens("splash")
+    object Onboarding : AppScreens("onboarding")
     object Login : AppScreens("login")
     object SignUp : AppScreens("signup")
     object ForgotPassword1 : AppScreens("forgot_password_1")
@@ -43,4 +44,7 @@ sealed class AppScreens(val route: String) {
     // object DetalheConsulta : AppScreens("consulta_detalhe/{consultaId}") {
     //     fun comId(consultaId: String) = "consulta_detalhe/$consultaId"
     // }
+    object GraphRoutes {
+        const val CUIDADOR = "cuidador_graph"
+    }
 }

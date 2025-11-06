@@ -1,15 +1,21 @@
 // build.gradle.kts (Module :app Level)
-
+import java.util.Properties
+import java.io.FileInputStream
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt") // Essencial para Hilt e Room
-    alias(libs.plugins.hilt) // Plugin Hilt para o módulo
+    id("kotlin-kapt") 
+    alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "com.example.salus"
-    compileSdk = 35 // Define o SDK de compilação diretamente
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.salus"
@@ -19,10 +25,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // O vectorDrawables pode ser útil para ícones adaptativos
-        // vectorDrawables {
-        //     useSupportLibrary = true
-        // }
+
+        buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("GEMINI_API_KEY")}\"")
     }
 
     buildTypes {
@@ -35,17 +39,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11 // Mantenha consistente com seu JDK
-        targetCompatibility = JavaVersion.VERSION_11 // Mantenha consistente com seu JDK
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11" // Mantenha consistente com seu JDK
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
-        // Certifique-se que esta versão é compatível com sua versão do Kotlin
         kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
@@ -60,12 +64,12 @@ dependencies {
     // ----- CORE & LIFECYCLE -----
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx) // ViewModel Kotlin extensions
-    implementation(libs.androidx.lifecycle.runtime.compose) // Para collectAsStateWithLifecycle
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     // ----- COMPOSE -----
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom)) // BOM gerencia versões do Compose
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -81,18 +85,18 @@ dependencies {
 
     // ----- HILT (Dependency Injection) -----
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler) // Compilador Hilt
-    implementation(libs.androidx.hilt.navigation.compose) // Integração Hilt + Navigation
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // ----- COROUTINES -----
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
-    // ----- NETWORKING (Retrofit - Mesmo simulando, a estrutura é útil) -----
+    // ----- NETWORKING -----
     implementation(libs.retrofit)
-    implementation(libs.converter.gson) // Ou Moshi, Kotlinx Serialization
+    implementation(libs.converter.gson)
     implementation(libs.okhttp)
-    implementation(libs.logging.interceptor) // Para logs de rede
+    implementation(libs.logging.interceptor)
 
     // ----- IMAGE LOADING (Coil) -----
     implementation(libs.coil.compose)
@@ -107,9 +111,16 @@ dependencies {
     // ----- GOOGLE MAPS -----
     implementation("com.google.android.gms:play-services-maps:+")
     implementation(libs.maps.compose)
+
+    // ----- GOOGLE AI (GEMINI) -----
+    implementation(libs.google.generativeai) // Usa a dependência limpa do libs.versions.toml
 }
 
-// Permitir erros de duplicação que o Kapt/Hilt podem causar (geralmente necessário)
+// FORÇA o Gradle a usar a versão correta da biblioteca Gemini, ignorando conflitos
+configurations.all {
+    resolutionStrategy.force(libs.google.generativeai)
+}
+
 kapt {
     correctErrorTypes = true
 }

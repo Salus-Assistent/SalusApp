@@ -1,15 +1,40 @@
-package com.example.salus.ui.screens.common // Ajuste o pacote se necessário
+package com.example.salus.ui.screens.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,56 +43,56 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.salus.R
+import com.example.salus.data.model.ChatMessage
 import com.example.salus.navigation.AppScreens
 import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
-import com.example.salus.ui.theme.*
-
-// --- Dados Simulados para o Chat ---
-data class ChatMessage(val text: String, val isFromUser: Boolean)
-
-// Mensagem de boas-vindas da SIA
-val welcomeMessage = ChatMessage(
-    text = "Olá, Mateus! Eu sou a SIA, sua assistente virtual. Como posso ajudar hoje? Você pode me perguntar sobre AVC ou sobre o app.",
-    isFromUser = false
-)
-// ------------------------------------
+import com.example.salus.ui.theme.AzulGradienteFim
+import com.example.salus.ui.theme.AzulGradienteInicio
+import com.example.salus.ui.theme.CinzaIcones
+import com.example.salus.ui.theme.SalusTheme
+import com.example.salus.viewmodel.ChatbotViewModel
 
 @Composable
-fun ChatbotScreen(navController: NavHostController) {
+fun ChatbotScreen(
+    navController: NavHostController,
+    viewModel: ChatbotViewModel = hiltViewModel()
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Estado para a mensagem que o usuário está a digitar
+    val chatMessages by viewModel.chatMessages.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
     var userMessage by remember { mutableStateOf("") }
 
-    // Lista de mensagens do chat (começa com a boas-vindas)
-    val chatMessages = remember { mutableStateListOf(welcomeMessage) }
+    val listState = rememberLazyListState()
 
-    // --- LAYOUT MANUAL COM BOX ---
+    LaunchedEffect(chatMessages.size) {
+        if (chatMessages.isNotEmpty()) {
+            listState.animateScrollToItem(chatMessages.size)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // FundoClaro
+            .background(MaterialTheme.colorScheme.background)
     ) {
-
-        // 1. Conteúdo do Ecrã (Column)
-        // Usamos Column (não rolável) para fixar a barra de digitação em baixo
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                // Padding para não ficar atrás da barra de navegação (90dp)
-                .padding(bottom = 90.dp),
+                .padding(bottom = 80.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            // --- Avatar da SIA ---
             Image(
-                painter = painterResource(id = R.drawable.sia), // Avatar da SIA
+                painter = painterResource(id = R.drawable.sia),
                 contentDescription = "Avatar SalusAI",
                 modifier = Modifier
                     .size(120.dp)
@@ -82,22 +107,24 @@ fun ChatbotScreen(navController: NavHostController) {
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            // --- Lista de Mensagens ---
-            // Usamos LazyColumn com weight(1f) para ocupar todo o espaço restante
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                reverseLayout = true // Mensagens novas aparecem em baixo
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                // Invertemos a lista para o reverseLayout funcionar corretamente
-                items(chatMessages.reversed()) { message ->
+                items(chatMessages) { message ->
                     MessageBubble(message = message)
+                }
+
+                if (isLoading) {
+                    item {
+                        MessageBubble(message = ChatMessage("...", false))
+                    }
                 }
             }
 
-            // --- Barra de Digitação ---
             OutlinedTextField(
                 value = userMessage,
                 onValueChange = { userMessage = it },
@@ -107,20 +134,13 @@ fun ChatbotScreen(navController: NavHostController) {
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 shape = RoundedCornerShape(24.dp),
                 trailingIcon = {
-                    IconButton(onClick = {
-                        // --- Lógica de Chat Simulada ---
-                        if (userMessage.isNotBlank()) {
-                            // Adiciona a mensagem do usuário
-                            chatMessages.add(ChatMessage(userMessage, true))
-                            val userMessageCopy = userMessage
+                    IconButton(
+                        onClick = {
+                            viewModel.sendMessage(userMessage)
                             userMessage = ""
-
-                            // Resposta simulada da IA
-                            // (Aqui entraria a lógica de IA real)
-                            val response = getSimulatedResponse(userMessageCopy)
-                            chatMessages.add(ChatMessage(response, false))
-                        }
-                    }) {
+                        },
+                        enabled = !isLoading && userMessage.isNotBlank()
+                    ) {
                         Icon(Icons.Default.Send, contentDescription = "Enviar", tint = AzulGradienteFim)
                     }
                 },
@@ -131,7 +151,6 @@ fun ChatbotScreen(navController: NavHostController) {
             )
         }
 
-        // 2. A Barra de Navegação (MANUAL)
         SalusBottomBar(
             modifier = Modifier.align(Alignment.BottomCenter),
             currentRoute = currentRoute,
@@ -140,25 +159,21 @@ fun ChatbotScreen(navController: NavHostController) {
             onNotificationsClick = { navController.navigate(AppScreens.NotificacoesPaciente.route) },
             onSettingsClick = { navController.navigate(AppScreens.PerfilPaciente.route) }
         )
-
-        // 3. O Botão FAB (MANUAL)
         SalusVoiceFAB(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = (-20).dp),
-            onClick = { /* TODO: Lógica de voz */ }
+                .offset(y = (-30).dp),
+            onClick = { /* TODO */ }
         )
     }
 }
 
-// --- Componente Privado para a Bolha de Chat ---
 @Composable
 private fun MessageBubble(message: ChatMessage) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        // Alinha à direita se for do usuário, à esquerda se for da IA
         horizontalArrangement = if (message.isFromUser) Arrangement.End else Arrangement.Start
     ) {
         Card(
@@ -168,11 +183,10 @@ private fun MessageBubble(message: ChatMessage) {
                 bottomStart = if (message.isFromUser) 16.dp else 0.dp,
                 bottomEnd = if (message.isFromUser) 0.dp else 16.dp
             ),
-            // Cor azul se for do usuário, cinza claro se for da IA
             colors = CardDefaults.cardColors(
                 containerColor = if (message.isFromUser) AzulGradienteInicio else MaterialTheme.colorScheme.surfaceVariant
             ),
-            modifier = Modifier.widthIn(max = 300.dp) // Limita a largura da bolha
+            modifier = Modifier.widthIn(max = 300.dp)
         ) {
             Text(
                 text = message.text,
@@ -183,13 +197,10 @@ private fun MessageBubble(message: ChatMessage) {
     }
 }
 
-// --- Lógica Simulada de Resposta da IA ---
-private fun getSimulatedResponse(userMessage: String): String {
-    val msg = userMessage.lowercase()
-    return when {
-        "avc" in msg || "sintomas" in msg -> "Os principais sintomas do AVC (FAST) são: Rosto caído (Face), fraqueza nos Braços (Arms) e dificuldade na Fala (Speech). Se notar isso, o Tempo (Time) é crucial. Ligue 192."
-        "remédio" in msg || "consulta" in msg -> "Você pode ver seus remédios e consultas na tela 'Remédios' ou na tela 'Calendário'."
-        "olá" in msg || "oi" in msg -> "Olá! Como posso te ajudar?"
-        else -> "Desculpe, eu só posso responder perguntas sobre AVC e sobre o aplicativo Salus."
+@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
+@Composable
+fun ChatbotScreenPreview() {
+    SalusTheme {
+        ChatbotScreen(navController = rememberNavController())
     }
 }

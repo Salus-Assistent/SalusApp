@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,31 +26,28 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.salus.R
 import com.example.salus.navigation.AppScreens
 import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.AzulGradienteFim
 import com.example.salus.ui.theme.AzulGradienteInicio
-import com.example.salus.ui.theme.SalusTheme
-import com.example.salus.ui.theme.VermelhoGradienteFim
-import com.example.salus.ui.theme.VermelhoGradienteInicio
+import com.example.salus.viewmodel.CuidadorSharedViewModel
+import com.example.salus.data.model.PacienteSimulado
 
-// TODO: Implementar os componentes internos (HeaderCuidador, VisorBPMPaciente, etc.)
 
 @Composable
-fun HomeScreenCuidador(navController: NavHostController) {
+fun HomeScreenCuidador(navController: NavHostController, sharedViewModel: CuidadorSharedViewModel) {
     val nomeUsuario = "Mateus Kenji"
     var bpmSimulado by remember { mutableStateOf((68..75).random()) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
+    val pacienteSelecionado by sharedViewModel.pacienteSelecionado.collectAsState()
+    val bpmParaMostrar = pacienteSelecionado?.bpmAtual ?: 0
     // --- LAYOUT MANUAL COM BOX ---
     // 1. O Scaffold é substituído por um Box principal
     Box(
@@ -73,7 +71,7 @@ fun HomeScreenCuidador(navController: NavHostController) {
             Spacer(modifier = Modifier.height(30.dp))
             HeaderCuidador(nomeUsuario = nomeUsuario)
             Spacer(modifier = Modifier.height(30.dp))
-            VisorBPM(bpm = bpmSimulado)
+            VisorBPM(bpm = bpmParaMostrar)
             Spacer(modifier = Modifier.height(30.dp))
             BotaoRegistros(onClick = { navController.navigate(AppScreens.RegistrosCuidador.route) })
             Spacer(modifier = Modifier.height(30.dp))
@@ -126,9 +124,6 @@ fun HomeScreenCuidador(navController: NavHostController) {
     }
 }
 
-// --- Cole aqui os seus Componentes Internos Privados ---
-// (HeaderPaciente, BotaoAlerta, VisorBPM, BotaoNavegacaoPequeno, BotaoChatbot)
-// ...
 @Composable
 private fun HeaderCuidador(nomeUsuario: String) {
     Column(

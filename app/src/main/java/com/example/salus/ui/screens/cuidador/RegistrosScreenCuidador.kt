@@ -44,6 +44,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
@@ -70,7 +71,9 @@ import com.example.salus.ui.theme.BotaoAdicionar
 import com.example.salus.ui.theme.CinzaIcones
 import com.example.salus.ui.theme.GraficoDiaNaoSelecionado
 import com.example.salus.ui.theme.GraficoDiaSelecionado
+import com.example.salus.viewmodel.CuidadorSharedViewModel
 import kotlin.random.Random
+import com.example.salus.data.model.PacienteSimulado
 
 // --- Dados Simulados para o Gráfico e Estatísticas ---
 // --- Dados Simulados (Atualizados) ---
@@ -91,19 +94,13 @@ val dadosSetembro = gerarDadosMensais(destaqueDia = "16", valorDestaque = 65)
 data class StatsBPM(val media: Int, val maior: Int, val menor: Int)
 val statsOutubro = StatsBPM(65, 85, 61)
 val statsSetembro = StatsBPM(70, 90, 58)
-// MUDANÇA: Dados simulados para a lista de pacientes
-data class PacienteSimulado(
-    val id: String,
-    val nome: String,
-    val iconeRes: Int, // Placeholder para a foto
-    val bpmAtual: Int
-)
-val pacientesSimuladosIniciais = mutableStateListOf(
-    PacienteSimulado("id_paciente_1", "Carlos Almeida", R.drawable.icon_masc, 72), // TODO: Adicionar avatar
-    PacienteSimulado("id_paciente_2", "Maria Joaquina", R.drawable.icon_fem, 78) // TODO: Adicionar avatar
-)
+
+
 @Composable
-fun RegistrosScreenCuidador(navController: NavHostController) {
+fun RegistrosScreenCuidador(
+    navController: NavHostController,
+    sharedViewModel: CuidadorSharedViewModel
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -115,11 +112,11 @@ fun RegistrosScreenCuidador(navController: NavHostController) {
     var diaSelecionado by remember { mutableStateOf("14") }
 
     // Estado para o pop-up de adicionar paciente
-    var pacienteSelecionadoId by remember { mutableStateOf("id_paciente_1") }
+    val pacienteSelecionado by sharedViewModel.pacienteSelecionado.collectAsState()
     var pacienteParaConfirmar by remember { mutableStateOf<PacienteSimulado?>(null) }
 
     var pacienteParaExcluir by remember { mutableStateOf<PacienteSimulado?>(null) }
-    val pacientesList = remember { pacientesSimuladosIniciais }
+    val pacientesList by sharedViewModel.pacientesDisponiveis.collectAsState()
 
     Box(
         modifier = Modifier
@@ -190,19 +187,18 @@ fun RegistrosScreenCuidador(navController: NavHostController) {
             }
 
             // --- Lista de Pacientes ---
-            items(pacientesList) { paciente -> // <-- MUDANÇA: Usa a lista dinâmica
+            items(pacientesList) { paciente -> // <-- MUDANÇA: Usa a lista do VM
                 key(paciente.id) {
                     PacienteCard(
                         paciente = paciente,
-                        isSelected = paciente.id == pacienteSelecionadoId,
+                        isSelected = paciente.id == pacienteSelecionado?.id,
                         onClick = {
                             pacienteParaConfirmar = paciente
                         },
-                        onDelete = { // <-- MUDANÇA: Passa a lambda de exclusão
+                        onDelete = {
                             pacienteParaExcluir = paciente
                         }
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
@@ -249,9 +245,8 @@ fun RegistrosScreenCuidador(navController: NavHostController) {
             AddPacienteDialog(
                 onDismiss = { showAddPacienteDialog = false },
                 onConfirm = { uuid ->
-                    pacientesList.add( // <-- MUDANÇA: Adiciona à lista dinâmica
-                        PacienteSimulado("id_${uuid.take(4)}", "Novo Paciente", R.drawable.icon_fem, 70)
-                    )
+                    // MUDANÇA: Chama o ViewModel para adicionar
+                    sharedViewModel.adicionarPaciente(uuid)
                     showAddPacienteDialog = false
                 }
             )
@@ -261,25 +256,23 @@ fun RegistrosScreenCuidador(navController: NavHostController) {
             ConfirmarSelecaoPacienteDialog(
                 pacienteNome = pacienteParaConfirmar!!.nome,
                 onConfirm = {
-                    pacienteSelecionadoId = pacienteParaConfirmar!!.id
+                    // MUDANÇA: Chama o ViewModel para selecionar
+                    sharedViewModel.selecionarPaciente(pacienteParaConfirmar!!)
                     pacienteParaConfirmar = null
                 },
-                onDismiss = {
-                    pacienteParaConfirmar = null
-                }
+                onDismiss = { pacienteParaConfirmar = null }
             )
         }
 
         if (pacienteParaExcluir != null) {
-            ConfirmDeleteDialog( // Reutilizando o diálogo da tela de Remédios
+            ConfirmDeleteDialog(
                 itemName = pacienteParaExcluir!!.nome,
                 onConfirm = {
-                    pacientesList.remove(pacienteParaExcluir) // Executa a exclusão
-                    pacienteParaExcluir = null // Fecha o diálogo
+                    // MUDANÇA: Chama o ViewModel para remover
+                    sharedViewModel.removerPaciente(pacienteParaExcluir!!)
+                    pacienteParaExcluir = null
                 },
-                onDismiss = {
-                    pacienteParaExcluir = null // Fecha o diálogo
-                }
+                onDismiss = { pacienteParaExcluir = null }
             )
         }
 
