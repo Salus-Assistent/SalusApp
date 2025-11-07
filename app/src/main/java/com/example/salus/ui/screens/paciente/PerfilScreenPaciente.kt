@@ -20,11 +20,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.salus.navigation.AppScreens
 import com.example.salus.ui.components.* // <-- Importa os novos componentes
 import com.example.salus.ui.theme.*
+import android.content.Intent
+import android.provider.Settings
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class) // Necessário para o TopAppBar
 @Composable
 fun PerfilScreenPaciente(navController: NavHostController) {
 
+    val context = LocalContext.current
     var showLogoutDialog by remember { mutableStateOf(false) }
     var remediosNotif by remember { mutableStateOf(true) }
     var bpmNotif by remember { mutableStateOf(false) }
@@ -138,6 +142,18 @@ fun PerfilScreenPaciente(navController: NavHostController) {
                         text = "Privacidade & Termos",
                         icon = Icons.Default.Lock,
                         onClick = { navController.navigate(AppScreens.PrivacidadeTermos.route) } //
+                    )
+
+                    Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+                    ProfileOptionButton(
+                        text = "Ativar Atalho de Emergência",
+                        icon = Icons.Default.VolumeUp,
+                        onClick = {
+                            // Abre as definições de Acessibilidade do telemóvel
+                            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                            context.startActivity(intent)
+                        }
                     )
                 }
             }

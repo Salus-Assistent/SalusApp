@@ -25,8 +25,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("GEMINI_API_KEY")}\"")
     }
 
     buildTypes {
@@ -47,7 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
+        buildConfig = true // Mantido para outras chaves, se houver
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
@@ -77,6 +75,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.text)
+    implementation(libs.play.services.location)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
@@ -112,13 +111,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:+")
     implementation(libs.maps.compose)
 
-    // ----- GOOGLE AI (GEMINI) -----
-    implementation(libs.google.generativeai) // Usa a dependência limpa do libs.versions.toml
-}
-
-// FORÇA o Gradle a usar a versão correta da biblioteca Gemini, ignorando conflitos
-configurations.all {
-    resolutionStrategy.force(libs.google.generativeai)
+    // ----- SMS -----
+    implementation(libs.accompanist.permissions)
 }
 
 kapt {

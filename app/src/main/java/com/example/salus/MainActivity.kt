@@ -10,11 +10,14 @@ import androidx.compose.ui.Modifier
 import com.example.salus.navigation.NavGraph // Importe seu NavGraph
 import com.example.salus.ui.theme.SalusTheme // Importe seu Tema
 import dagger.hilt.android.AndroidEntryPoint
+import com.example.salus.navigation.AppScreens
 
 @AndroidEntryPoint // Essencial para o Hilt funcionar na Activity
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val startDestination = intent.getStringExtra("START_DESTINATION")
+            ?: AppScreens.Splash.route
         setContent {
             SalusTheme { // Aplica seu tema (cores, fontes)
                 Surface(

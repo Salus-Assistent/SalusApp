@@ -27,13 +27,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.salus.R
 import com.example.salus.ui.theme.*
 import kotlinx.coroutines.launch
+import android.Manifest
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 
 // --- Dados para as páginas do Onboarding ---
 private data class OnboardingPage(
     val imageRes: Int,
     val title: String,
-    val description: String
+    val description: String,
+    val isPermissionPage: Boolean = false
 )
 
 private val onboardingPages = listOf(
@@ -51,14 +56,20 @@ private val onboardingPages = listOf(
         imageRes = R.drawable.salus_onboarding_2, // TODO: Adicionar imagem
         title = "Cuidado Conectado",
         description = "Permita que Cuidadores ajudem a gerir os seus remédios, consultas e monitorem o seu bem-estar."
+    ),
+    OnboardingPage(
+        imageRes = R.drawable.salus_onboarding_3, // TODO: Adicionar imagem ic_onboarding_permissions
+        title = "Permissões Necessárias",
+        description = "Para funcionar corretamente, o Salus precisa de permissão para:" +
+                "1. Enviar SMS (para os seus contatos de emergência)." +
+                "2. Aceder à sua Localização (para o link do mapa no SMS)."
+        ,isPermissionPage = true // Marca esta como a página especial
     )
     // Podemos adicionar um 4º ecrã para permissões se quisermos
 )
 // ------------------------------------
 
-@OptIn(ExperimentalMaterial3Api::class,
-    ExperimentalFoundationApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class) // <-- MUDANÇA
 @Composable
 fun OnboardingScreen(
     onFinish: () -> Unit // Ação para navegar para o Login
@@ -66,8 +77,19 @@ fun OnboardingScreen(
     val pagerState = rememberPagerState(pageCount = { onboardingPages.size })
     val scope = rememberCoroutineScope()
 
+    // --- Lógica das Permissões ---
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    )
+
+    // O botão "Começar" só ativa se as permissões forem dadas
+    val isFinishButtonEnabled = permissionsState.allPermissionsGranted
+
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background // FundoClaro
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -80,9 +102,14 @@ fun OnboardingScreen(
             // --- Pager (O conteúdo que desliza) ---
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.weight(1f) // Ocupa a maior parte do ecrã
+                modifier = Modifier.weight(1f),
+                userScrollEnabled = !onboardingPages[pagerState.currentPage].isPermissionPage // Bloqueia o deslize na última página
             ) { pageIndex ->
-                OnboardingPageItem(page = onboardingPages[pageIndex])
+                OnboardingPageItem(
+                    page = onboardingPages[pageIndex],
+                    // Passa o estado das permissões para a última página
+                    permissionsState = if (pageIndex == onboardingPages.size - 1) permissionsState else null
+                )
             }
 
             // --- Indicador de Página (Pontos) ---
@@ -109,10 +136,9 @@ fun OnboardingScreen(
                 onClick = {
                     scope.launch {
                         if (pagerState.currentPage < pagerState.pageCount - 1) {
-                            // Vai para a próxima página
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         } else {
-                            // Está na última página, navega para o Login
+                            // Está na última página (Permissões)
                             onFinish()
                         }
                     }
@@ -123,9 +149,10 @@ fun OnboardingScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
-                )
+                ),
+                // MUDANÇA: Desativa o botão "Começar" se as permissões não forem dadas
+                enabled = if (pagerState.currentPage == pagerState.pageCount - 1) isFinishButtonEnabled else true
             ) {
-                // O texto do botão muda se estiver na última página
                 Text(
                     text = if (pagerState.currentPage == pagerState.pageCount - 1) "Começar" else "Próximo",
                     fontWeight = FontWeight.Bold
@@ -138,8 +165,12 @@ fun OnboardingScreen(
 /**
  * Composable que desenha o conteúdo de uma única página do Onboarding.
  */
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-private fun OnboardingPageItem(page: OnboardingPage) {
+private fun OnboardingPageItem(
+    page: OnboardingPage,
+    permissionsState: MultiplePermissionsState? // Tipo complexo
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -151,7 +182,7 @@ private fun OnboardingPageItem(page: OnboardingPage) {
             painter = painterResource(id = page.imageRes),
             contentDescription = null,
             modifier = Modifier
-                .size(250.dp) // Tamanho da imagem
+                .size(250.dp)
                 .clip(RoundedCornerShape(16.dp)),
             contentScale = ContentScale.Crop
         )
@@ -170,6 +201,18 @@ private fun OnboardingPageItem(page: OnboardingPage) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
+
+        // --- MUDANÇA: Mostra o botão de pedir permissão ---
+        if (page.isPermissionPage && permissionsState != null) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(
+                onClick = { permissionsState.launchMultiplePermissionRequest() },
+                // Mostra apenas se as permissões AINDA NÃO foram dadas
+                enabled = !permissionsState.allPermissionsGranted
+            ) {
+                Text(if (permissionsState.allPermissionsGranted) "Permissões Concedidas!" else "Permitir Acesso")
+            }
+        }
     }
 }
 

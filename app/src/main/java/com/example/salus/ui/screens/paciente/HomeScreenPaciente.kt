@@ -37,6 +37,8 @@ import com.example.salus.viewmodel.HomePacienteViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import com.example.salus.domain.AlertManager
 
 @Composable
 fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePacienteViewModel = hiltViewModel()) {
@@ -45,6 +47,7 @@ fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePaciente
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     //val currentRoute = navBackStackEntry?.destination?.route
     val currentRoute = AppScreens.HomePaciente.route
+    val context = LocalContext.current
 
     // --- LAYOUT MANUAL COM BOX ---
     // 1. O Scaffold é substituído por um Box principal
@@ -53,7 +56,6 @@ fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePaciente
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background) // FundoClaro
     ) {
-
         // 2. O conteúdo do ecrã (Column rolável)
         // (Este é o código que você já tinha, mas com padding inferior ajustado)
         Column(
@@ -69,9 +71,13 @@ fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePaciente
             Spacer(modifier = Modifier.height(30.dp))
             HeaderPaciente(nomeUsuario = nomeUsuario)
             Spacer(modifier = Modifier.height(30.dp))
-            BotaoAlerta(onClick = { navController.navigate(AppScreens.AlertaRecebidoCuidador.route) })
+            BotaoAlerta(onClick = { AlertManager.triggerAlert(context)})
             Spacer(modifier = Modifier.height(30.dp))
-            VisorBPM(bpm = bpmSimulado)
+            VisorBPM(bpm = bpmSimulado,
+                modifier = Modifier.clickable{
+                    navController.navigate(AppScreens.FASTScreen.route)
+                }
+            )
             Spacer(modifier = Modifier.height(30.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -181,9 +187,9 @@ private fun BotaoAlerta(onClick: () -> Unit) {
 }
 
 @Composable
-private fun VisorBPM(bpm: Int) {
+private fun VisorBPM(bpm: Int, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(125.dp)
             .clip(RoundedCornerShape(24.dp))

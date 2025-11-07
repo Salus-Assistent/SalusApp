@@ -133,6 +133,9 @@ fun NavGraph(
         composable(AppScreens.Chatbot.route){
             ChatbotScreen(navController = navController)
         }
+        composable(AppScreens.FASTScreen.route) {
+            FASTScreen(navController = navController)
+        }
 
         //--- Comum ---
         composable(AppScreens.EditarPerfil.route) {
@@ -144,6 +147,7 @@ fun NavGraph(
         composable(AppScreens.PrivacidadeTermos.route) {
             PrivacidadeTermosScreen(navController = navController)
         }
+
 
         // ===== INÍCIO DO FLUXO CUIDADOR (COPIADO DO CUIDADORNAVGRAPH.KT) =====
         navigation(
@@ -196,6 +200,8 @@ fun NavGraph(
             composable(AppScreens.ChatbotCuidador.route){
                 ChatbotScreenCuidador(navController = navController)
             }
+
+
             // Não precisa de duplicar o Chatbot, a menos que AppScreens.Chatbot seja diferente
         }
         // ===== FIM DO FLUXO CUIDADOR =====

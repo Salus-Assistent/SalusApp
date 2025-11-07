@@ -39,6 +39,8 @@ sealed class AppScreens(val route: String) {
     object GerirPacientes : AppScreens("gerir_pacientes")
     object AjudaTutorial : AppScreens("ajuda_tutorial")
     object PrivacidadeTermos : AppScreens("privacidade_termos")
+    object FASTScreen : AppScreens("fast_screen")
+
 
     // Rota com argumento (Exemplo se precisarmos ir para detalhes de algo)
     // object DetalheConsulta : AppScreens("consulta_detalhe/{consultaId}") {

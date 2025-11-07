@@ -33,7 +33,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,13 +40,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.salus.R
 import com.example.salus.data.model.ChatMessage
 import com.example.salus.navigation.AppScreens
@@ -56,7 +53,6 @@ import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.AzulGradienteFim
 import com.example.salus.ui.theme.AzulGradienteInicio
 import com.example.salus.ui.theme.CinzaIcones
-import com.example.salus.ui.theme.SalusTheme
 import com.example.salus.viewmodel.ChatbotViewModel
 
 @Composable
@@ -194,13 +190,5 @@ private fun MessageBubble(message: ChatMessage) {
                 color = if (message.isFromUser) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-    }
-}
-
-@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
-@Composable
-fun ChatbotScreenPreview() {
-    SalusTheme {
-        ChatbotScreen(navController = rememberNavController())
     }
 }

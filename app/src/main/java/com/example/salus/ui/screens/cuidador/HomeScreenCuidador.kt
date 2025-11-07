@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.salus.R
@@ -37,17 +38,16 @@ import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.AzulGradienteFim
 import com.example.salus.ui.theme.AzulGradienteInicio
 import com.example.salus.viewmodel.CuidadorSharedViewModel
-import com.example.salus.data.model.PacienteSimulado
+import com.example.salus.viewmodel.HomePacienteViewModel
 
 
 @Composable
-fun HomeScreenCuidador(navController: NavHostController, sharedViewModel: CuidadorSharedViewModel) {
-    val nomeUsuario = "Mateus Kenji"
-    var bpmSimulado by remember { mutableStateOf((68..75).random()) }
+fun HomeScreenCuidador(navController: NavHostController, sharedViewModel: CuidadorSharedViewModel, viewModel: HomePacienteViewModel = hiltViewModel()) {
+    val nomeUsuario by viewModel.nomeUsuario.collectAsState()
+    val bpmSimulado by viewModel.bpmSimulado.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val pacienteSelecionado by sharedViewModel.pacienteSelecionado.collectAsState()
-    val bpmParaMostrar = pacienteSelecionado?.bpmAtual ?: 0
+
     // --- LAYOUT MANUAL COM BOX ---
     // 1. O Scaffold é substituído por um Box principal
     Box(
@@ -71,7 +71,7 @@ fun HomeScreenCuidador(navController: NavHostController, sharedViewModel: Cuidad
             Spacer(modifier = Modifier.height(30.dp))
             HeaderCuidador(nomeUsuario = nomeUsuario)
             Spacer(modifier = Modifier.height(30.dp))
-            VisorBPM(bpm = bpmParaMostrar)
+            VisorBPM(bpm = bpmSimulado)
             Spacer(modifier = Modifier.height(30.dp))
             BotaoRegistros(onClick = { navController.navigate(AppScreens.RegistrosCuidador.route) })
             Spacer(modifier = Modifier.height(30.dp))
