@@ -72,15 +72,6 @@ fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePaciente
             HeaderPaciente(nomeUsuario = nomeUsuario)
             Spacer(modifier = Modifier.height(30.dp))
             BotaoAlerta(onClick = { AlertManager.sendEmergencySms(context) })
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // BOTÃO DE TESTE TEMPORÁRIO
-            Button(onClick = { 
-                AlertManager.sendEmergencySms(context)
-            }) {
-                Text("Testar Envio de SMS (Primeiro Plano)")
-            }
-            
             Spacer(modifier = Modifier.height(30.dp))
             VisorBPM(bpm = bpmSimulado,
                 modifier = Modifier.clickable{
