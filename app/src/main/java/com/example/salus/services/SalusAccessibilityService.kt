@@ -50,7 +50,7 @@ class SalusAccessibilityService : AccessibilityService() {
             // Se chegámos a 3 cliques
             if (pressCount == 3) {
                 // SUCESSO! Dispara o alerta.
-                triggerAlert()
+                sendEmergencySms()
 
                 // Reinicia a contagem
                 pressCount = 0
@@ -66,8 +66,8 @@ class SalusAccessibilityService : AccessibilityService() {
         return super.onKeyEvent(event)
     }
 
-    private fun triggerAlert() {
-        AlertManager.triggerAlert(this)
+    private fun sendEmergencySms() {
+        AlertManager.sendEmergencySms(this)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
