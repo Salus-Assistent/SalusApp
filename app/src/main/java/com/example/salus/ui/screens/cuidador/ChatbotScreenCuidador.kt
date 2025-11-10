@@ -48,6 +48,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.salus.R
 import com.example.salus.data.model.ChatMessage
 import com.example.salus.navigation.AppScreens
+import com.example.salus.ui.components.MarkdownText
 import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.AzulGradienteFim
@@ -185,11 +186,19 @@ private fun MessageBubble(message: ChatMessage) {
             ),
             modifier = Modifier.widthIn(max = 300.dp)
         ) {
-            Text(
-                text = message.text,
-                modifier = Modifier.padding(12.dp),
-                color = if (message.isFromUser) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            if (message.isFromUser) {
+                Text(
+                    text = message.text,
+                    modifier = Modifier.padding(12.dp),
+                    color = Color.White
+                )
+            } else {
+                MarkdownText(
+                    text = message.text,
+                    modifier = Modifier.padding(12.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
