@@ -20,7 +20,6 @@ fun SalusButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     color: Color
-    // TODO: Adicionar parâmetro para cor/gradiente se necessário
 ) {
     Button(
         onClick = onClick,
@@ -30,22 +29,17 @@ fun SalusButton(
             .padding(vertical = 8.dp),
         shape = RoundedCornerShape(50.dp),
         enabled = enabled
-        // Se quiser usar gradiente no botão:
-        // colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-        // contentPadding = PaddingValues() // Remover padding interno se usar background
     ) {
-        // Se usar gradiente, envolva o Text com um Box e aplique o background nele:
-        // Box(modifier = Modifier.background(Brush.verticalGradient(colors= listOf(AzulGradienteInicio, AzulGradienteFim))).fillMaxSize(), contentAlignment = Alignment.Center) { ... }
         Text(text = text, fontWeight = FontWeight.Bold)
     }
 }
 
-@Preview(showBackground = true, widthDp = 300) // Definimos uma largura para o preview
+@Preview(showBackground = true, widthDp = 300)
 @Composable
 fun SalusButtonPreview() {
     SalusTheme {
         SalusButton(
-            onClick = {}, // Ação vazia no preview
+            onClick = {},
             text = "ENTRAR",
             color = MaterialTheme.colorScheme.primary
         )
@@ -61,7 +55,6 @@ fun SalusButtonDisabledPreview() {
             text = "CARREGANDO...",
             enabled = false,
             color = MaterialTheme.colorScheme.primary
-            // Exemplo de botão desabilitado
         )
     }
 }

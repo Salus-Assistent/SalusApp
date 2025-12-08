@@ -28,7 +28,7 @@ import com.example.salus.ui.components.*
 // --- Dados Simulados ---
 private data class CuidadorSimulado(val id: String, val nome: String, val iconeRes: Int)
 private val cuidadoresPendentes = listOf(
-    CuidadorSimulado("id_cuidador_3", "Enfermeira Joana", R.drawable.icon_fem) // TODO: Adicionar avatares
+    CuidadorSimulado("id_cuidador_3", "Enfermeira Joana", R.drawable.icon_fem)
 )
 private val cuidadoresAtivos = listOf(
     CuidadorSimulado("id_cuidador_1", "Carlos Almeida", R.drawable.icon_masc)

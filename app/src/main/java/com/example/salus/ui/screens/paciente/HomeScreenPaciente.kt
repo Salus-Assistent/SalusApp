@@ -6,11 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,7 +33,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.salus.R
 import com.example.salus.navigation.AppScreens
 import com.example.salus.ui.components.SalusBottomBar // <-- Importa o componente
-import com.example.salus.ui.components.SalusVoiceFAB // <-- Importa o componente
 import com.example.salus.ui.theme.*
 import com.example.salus.viewmodel.HomePacienteViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,25 +40,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import com.example.salus.domain.AlertManager
+import com.example.salus.ui.components.SalusVoiceFAB
+import com.example.salus.viewmodel.VoiceCommandViewModel
 
 @Composable
-fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePacienteViewModel = hiltViewModel()) {
+fun HomeScreenPaciente(
+    navController: NavHostController,
+    viewModel: HomePacienteViewModel = hiltViewModel(),
+    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
+) {
     val nomeUsuario by viewModel.nomeUsuario.collectAsState()
     val bpmSimulado by viewModel.bpmSimulado.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     //val currentRoute = navBackStackEntry?.destination?.route
     val currentRoute = AppScreens.HomePaciente.route
     val context = LocalContext.current
+    val isListening by voiceViewModel.isListening.collectAsState()
 
-    // --- LAYOUT MANUAL COM BOX ---
-    // 1. O Scaffold é substituído por um Box principal
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background) // FundoClaro
     ) {
-        // 2. O conteúdo do ecrã (Column rolável)
-        // (Este é o código que você já tinha, mas com padding inferior ajustado)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -102,8 +108,7 @@ fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePaciente
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        // 3. A Barra de Navegação (MANUAL)
-        // Alinhamos na base do Box (fica por cima da Column)
+
         SalusBottomBar(
             modifier = Modifier.align(Alignment.BottomCenter), // Alinha na base
             currentRoute = currentRoute,
@@ -119,11 +124,12 @@ fun HomeScreenPaciente(navController: NavHostController, viewModel: HomePaciente
         // Alinhamos na base e centro do Box (fica por cima de tudo)
         SalusVoiceFAB(
             modifier = Modifier
-                .align(Alignment.BottomCenter) // Alinha na base e centro
-                // Puxamos para cima metade da altura da barra (60dp / 2 = 30dp)
-                // para o centro do FAB ficar na linha
-                .offset(y = (-20).dp),
-            onClick = { /* TODO: Lógica de voz */ }
+                .align(Alignment.BottomCenter)
+                .offset(y = (-30).dp),
+            onClick = {
+                voiceViewModel.startListening()
+            },
+            isListening = isListening
         )
     }
 }

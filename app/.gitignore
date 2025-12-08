@@ -1,1 +1,31 @@
-/build
+# Arquivos de construção e temporários
+.gradle
+/local.properties
+/.idea/workspace.xml
+.DS_Store
+build/
+.cxx/
+.externalNativeBuild/
+.sync/
+
+# Logs
+*.log
+
+# APKs
+*.apk
+*.ap_
+
+# Outros arquivos gerados
+*.iml
+captures/
+.navigation/
+
+# Cache do Android Studio
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/render.experimental.xml
+.idea/assetWizardSettings.xml
+
+# Chaves de API e configurações locais (CRÍTICO!)
+local.properties

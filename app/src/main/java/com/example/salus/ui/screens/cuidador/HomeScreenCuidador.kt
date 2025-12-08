@@ -39,14 +39,21 @@ import com.example.salus.ui.theme.AzulGradienteFim
 import com.example.salus.ui.theme.AzulGradienteInicio
 import com.example.salus.viewmodel.CuidadorSharedViewModel
 import com.example.salus.viewmodel.HomePacienteViewModel
+import com.example.salus.viewmodel.VoiceCommandViewModel
 
 
 @Composable
-fun HomeScreenCuidador(navController: NavHostController, sharedViewModel: CuidadorSharedViewModel, viewModel: HomePacienteViewModel = hiltViewModel()) {
+fun HomeScreenCuidador(
+    navController: NavHostController, 
+    sharedViewModel: CuidadorSharedViewModel, 
+    viewModel: HomePacienteViewModel = hiltViewModel(),
+    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
+) {
     val nomeUsuario by viewModel.nomeUsuario.collectAsState()
     val bpmSimulado by viewModel.bpmSimulado.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val isListening by voiceViewModel.isListening.collectAsState()
 
     // --- LAYOUT MANUAL COM BOX ---
     // 1. O Scaffold é substituído por um Box principal
@@ -119,7 +126,8 @@ fun HomeScreenCuidador(navController: NavHostController, sharedViewModel: Cuidad
                 // Puxamos para cima metade da altura da barra (60dp / 2 = 30dp)
                 // para o centro do FAB ficar na linha
                 .offset(y = (-20).dp),
-            onClick = { /* TODO: Lógica de voz */ }
+            onClick = { voiceViewModel.startListening() },
+            isListening = isListening
         )
     }
 }
@@ -136,7 +144,7 @@ private fun HeaderCuidador(nomeUsuario: String) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = nomeUsuario,
+            text = "Marianas",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground

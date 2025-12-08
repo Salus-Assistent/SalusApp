@@ -19,9 +19,7 @@ import kotlin.random.Random
 @HiltViewModel
 class HomePacienteViewModel @Inject constructor() : ViewModel() {
 
-    // --- Nome do Paciente (Simulado) ---
-    // (Numa app real, isto viria do UserRepository após o login)
-    private val _nomeUsuario = MutableStateFlow("Mateus Kenji")
+    private val _nomeUsuario = MutableStateFlow("Mario")
     val nomeUsuario: StateFlow<String> = _nomeUsuario.asStateFlow()
 
     // --- BPM Simulado Dinâmico ---

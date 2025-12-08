@@ -48,6 +48,7 @@ generativeai = "0.5.0" # Versão única e estável
 #SMS
 accompanist = "0.34.0"
 playServicesLocation = "21.3.0"
+generativeaiVersion = "0.9.0"
 
 [libraries]
 # ----- CORE & LIFECYCLE -----
@@ -106,6 +107,7 @@ google-generativeai = { group = "com.google.ai.client.generativeai", name = "gen
 # ----- PERMISSÕES (Accompanist) -----
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeaiVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidApplication" }

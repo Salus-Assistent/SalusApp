@@ -81,7 +81,8 @@ fun OnboardingScreen(
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.SEND_SMS,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.RECORD_AUDIO
         )
     )
 

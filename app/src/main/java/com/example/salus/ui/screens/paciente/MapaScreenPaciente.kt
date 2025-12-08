@@ -33,6 +33,9 @@ import com.example.salus.navigation.AppScreens
 import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.salus.viewmodel.VoiceCommandViewModel
+import androidx.compose.runtime.collectAsState
 
 // --- MUDANÇA: Dados Simulados agora incluem LatLng ---
 data class LocalSimulado(
@@ -56,9 +59,13 @@ val localizacaoPacienteSimulada = LatLng(-23.5320, -46.6915) // Ponto médio
 // ------------------------------------
 
 @Composable
-fun MapaScreenPaciente(navController: NavHostController) {
+fun MapaScreenPaciente(
+    navController: NavHostController,
+    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val isListening by voiceViewModel.isListening.collectAsState()
 
     // --- Estado da Câmera do Mapa ---
     // Inicia a câmera centrada na localização simulada do paciente
@@ -164,7 +171,8 @@ fun MapaScreenPaciente(navController: NavHostController) {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .offset(y = (-30).dp),
-            onClick = { /* TODO */ }
+            onClick = { voiceViewModel.startListening() },
+            isListening = isListening
         )
     }
 }

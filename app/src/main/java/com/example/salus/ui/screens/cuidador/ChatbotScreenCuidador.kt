@@ -55,17 +55,20 @@ import com.example.salus.ui.theme.AzulGradienteFim
 import com.example.salus.ui.theme.AzulGradienteInicio
 import com.example.salus.ui.theme.CinzaIcones
 import com.example.salus.viewmodel.ChatbotViewModel
+import com.example.salus.viewmodel.VoiceCommandViewModel
 
 @Composable
 fun ChatbotScreenCuidador(
     navController: NavHostController,
-    viewModel: ChatbotViewModel = hiltViewModel()
+    viewModel: ChatbotViewModel = hiltViewModel(),
+    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     val chatMessages by viewModel.chatMessages.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val isListening by voiceViewModel.isListening.collectAsStateWithLifecycle()
 
     var userMessage by remember { mutableStateOf("") }
 
@@ -161,7 +164,8 @@ fun ChatbotScreenCuidador(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .offset(y = (-30).dp),
-            onClick = { /* TODO */ }
+            onClick = { voiceViewModel.startListening() },
+            isListening = isListening
         )
     }
 }

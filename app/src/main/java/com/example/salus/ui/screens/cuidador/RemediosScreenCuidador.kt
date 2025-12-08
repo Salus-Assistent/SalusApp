@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog // Para o Pop-up
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.salus.navigation.AppScreens
@@ -38,6 +39,7 @@ import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.*
 import com.example.salus.viewmodel.CuidadorSharedViewModel
+import com.example.salus.viewmodel.VoiceCommandViewModel
 
 // --- Dados Simulados (Copie do RemediosScreenPaciente se precisar) ---
 data class RemedioSimulado(
@@ -92,10 +94,12 @@ data class ConsultaFormData(
 @Composable
 fun RemediosScreenCuidador(
     navController: NavHostController,
-    sharedViewModel: CuidadorSharedViewModel
+    sharedViewModel: CuidadorSharedViewModel,
+    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val isListening by voiceViewModel.isListening.collectAsState()
 
     // Estado para controlar a visibilidade do pop-up de adicionar
     var showAddDialog by remember { mutableStateOf(false) }
@@ -215,7 +219,8 @@ fun RemediosScreenCuidador(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .offset(y = (-20).dp),
-            onClick = { /* TODO */ }
+            onClick = { voiceViewModel.startListening() },
+            isListening = isListening
         )
 
 

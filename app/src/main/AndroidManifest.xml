@@ -13,6 +13,7 @@
     tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SEND_SMS"
         tools:ignore="SmsAndCallLogPolicy" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <application
         android:name=".SalusApplication"
         android:allowBackup="true"

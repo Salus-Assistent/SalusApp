@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.salus.R
@@ -31,14 +32,20 @@ import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
 import com.example.salus.ui.theme.*
 import com.example.salus.viewmodel.CuidadorSharedViewModel
+import com.example.salus.viewmodel.VoiceCommandViewModel
 
 // Ponto central para o mapa (mesmo do paciente)
 val localizacaoPacienteSimulada = LatLng(-23.528113252597624, -46.691858318684694)
 
 @Composable
-fun MapaScreenCuidador(navController: NavHostController, sharedViewModel: CuidadorSharedViewModel) {
+fun MapaScreenCuidador(
+    navController: NavHostController, 
+    sharedViewModel: CuidadorSharedViewModel,
+    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val isListening by voiceViewModel.isListening.collectAsState()
 
     // --- Dados Simulados ---
     val bpmSimuladoPaciente = 72
@@ -92,7 +99,8 @@ fun MapaScreenCuidador(navController: NavHostController, sharedViewModel: Cuidad
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .offset(y = (-10).dp),
-            onClick = { /* TODO: Lógica de voz */ }
+            onClick = { voiceViewModel.startListening() },
+            isListening = isListening
         )
     }
 }

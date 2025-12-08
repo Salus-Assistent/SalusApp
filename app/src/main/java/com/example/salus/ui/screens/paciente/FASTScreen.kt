@@ -28,16 +28,13 @@ import com.example.salus.ui.theme.VermelhoGradienteInicio
 @Composable
 fun FASTScreen(navController: NavHostController) {
 
-    // Estados para guardar as respostas (null = não respondido)
-    var fastRosto by remember { mutableStateOf<Boolean?>(null) } // true = Normal, false = Sintoma
+
+    var fastRosto by remember { mutableStateOf<Boolean?>(null) }
     var fastBracos by remember { mutableStateOf<Boolean?>(null) }
     var fastFala by remember { mutableStateOf<Boolean?>(null) }
 
-    // Função que é chamada quando o utilizador clica num sintoma
     val onSintomaDetectado = {
-        // Navega imediatamente para o Ecrã de Alerta
         navController.navigate(AppScreens.AlertaRecebidoCuidador.route) {
-            // Limpa o ecrã FAST da pilha
             popUpTo(AppScreens.FASTScreen.route) { inclusive = true }
         }
     }
@@ -83,15 +80,14 @@ fun FASTScreen(navController: NavHostController) {
                 botaoNormalTexto = "Sorriso Normal",
                 selecao = fastRosto,
                 onSintomaClick = {
-                    fastRosto = false // Define o estado (Sintoma)
-                    onSintomaDetectado() // Dispara o alerta
+                    fastRosto = false
+                    onSintomaDetectado()
                 },
-                onNormalClick = { fastRosto = true } // Define o estado (Normal)
+                onNormalClick = { fastRosto = true }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- 2. Braços (Arms) ---
             FASTTestCard(
                 titulo = "2. Braços (Arms)",
                 instrucao = "Peça à pessoa para levantar os dois braços.",
@@ -205,12 +201,3 @@ private fun FASTTestCard(
     }
 }
 
-
-// --- Preview ---
-@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
-@Composable
-fun FASTScreenPreview() {
-    SalusTheme {
-        FASTScreen(navController = rememberNavController())
-    }
-}

@@ -45,6 +45,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.salus.viewmodel.VoiceCommandViewModel
+import androidx.compose.runtime.collectAsState
 
 // --- Dados Simulados ---
 data class RemedioSimulado(
@@ -81,11 +84,15 @@ val consultaSimulada = ConsultaSimulada(
 
 
 @Composable
-fun RemediosScreenPaciente(navController: NavHostController) {
+fun RemediosScreenPaciente(
+    navController: NavHostController, 
+    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var remedioEmDetalhe by remember { mutableStateOf<RemedioSimulado?>(null) }
     val uriHandler = LocalUriHandler.current
+    val isListening by voiceViewModel.isListening.collectAsState()
 
     // --- LAYOUT MANUAL COM BOX (Substituindo o Scaffold) ---
     Box(
@@ -170,7 +177,8 @@ fun RemediosScreenPaciente(navController: NavHostController) {
                 .align(Alignment.BottomCenter) // Alinha na base e centro
                 // Puxa para cima metade da altura da barra (60dp / 2 = 30dp)
                 .offset(y = (-20).dp),
-            onClick = { /* TODO: Lógica de voz */ }
+            onClick = { voiceViewModel.startListening() },
+            isListening = isListening
         )
         if (remedioEmDetalhe != null) {
             RemedioDetailsDialog(

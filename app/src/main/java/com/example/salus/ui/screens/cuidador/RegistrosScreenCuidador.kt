@@ -1,5 +1,6 @@
 package com.example.salus.ui.screens.cuidador // Ajuste o pacote se necessário
 
+import android.speech.tts.Voice
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,6 +61,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.salus.R
@@ -74,6 +76,7 @@ import com.example.salus.ui.theme.GraficoDiaSelecionado
 import com.example.salus.viewmodel.CuidadorSharedViewModel
 import kotlin.random.Random
 import com.example.salus.data.model.PacienteSimulado
+import com.example.salus.viewmodel.VoiceCommandViewModel
 
 // --- Dados Simulados para o Gráfico e Estatísticas ---
 // --- Dados Simulados (Atualizados) ---
@@ -99,10 +102,12 @@ val statsSetembro = StatsBPM(70, 90, 58)
 @Composable
 fun RegistrosScreenCuidador(
     navController: NavHostController,
-    sharedViewModel: CuidadorSharedViewModel
+    sharedViewModel: CuidadorSharedViewModel,
+    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val isListening by voiceViewModel.isListening.collectAsState()
 
     // Estado para o seletor de mês
     var mesAtual by remember { mutableStateOf("Outubro 2025") }
@@ -237,7 +242,8 @@ fun RegistrosScreenCuidador(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .offset(y = (-20).dp),
-            onClick = { /* TODO */ }
+            onClick = { voiceViewModel.startListening() },
+            isListening = isListening
         )
 
         // --- Diálogos ---

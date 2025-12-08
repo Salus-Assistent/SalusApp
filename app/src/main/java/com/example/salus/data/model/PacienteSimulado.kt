@@ -1,8 +1,6 @@
-package com.example.salus.data.model // Ou o seu pacote
+package com.example.salus.data.model
 
-import com.example.salus.R // Importe o R
-
-// (Pode adicionar os outros imports de dados simulados aqui também)
+import com.example.salus.R
 
 data class PacienteSimulado(
     val id: String,
@@ -10,5 +8,3 @@ data class PacienteSimulado(
     val iconeRes: Int,
     val bpmAtual: Int
 )
-
-// Podemos mover a lista inicial para o ViewModel

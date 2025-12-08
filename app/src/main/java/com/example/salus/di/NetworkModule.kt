@@ -16,8 +16,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    // CORRIGIDO: URL Base para usar o IP real da sua máquina na rede local
-    private const val BASE_URL = "http://192.168.15.14:5678/"
+    private const val BASE_URL = "https://kaelkj.app.n8n.cloud/"
 
     @Provides
     @Singleton

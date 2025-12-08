@@ -1,11 +1,13 @@
 package com.example.salus.viewmodel
 
-import android.util.Log
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.salus.data.model.ChatMessage
 import com.example.salus.data.repository.ChatbotRepository
+import com.example.salus.domain.SalusTextToSpeech
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,8 +17,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatbotViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val chatbotRepository: ChatbotRepository
 ) : ViewModel() {
+
+    // Inicializa o TTS
+    private val tts = SalusTextToSpeech(context)
 
     private val _chatMessages = MutableStateFlow<List<ChatMessage>>(emptyList())
     val chatMessages: StateFlow<List<ChatMessage>> = _chatMessages.asStateFlow()
@@ -25,40 +31,52 @@ class ChatbotViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     init {
-        _chatMessages.value = listOf(
-            ChatMessage(
-                text = "Olá! Eu sou a SIA, a assistente virtual do Salus. Estou aqui para ajudar com qualquer dúvida que você tenha sobre AVC ou sobre como usar o aplicativo. O que gostaria de saber?",
-                isFromUser = false
-            )
-        )
+        // Mensagem inicial fixa (Resolve a complexidade do repositório)
+        val initialMessage = "Olá! Eu sou a SIA. Como posso ajudar com a sua saúde hoje?"
+        _chatMessages.value = listOf(ChatMessage(initialMessage, false))
+
+        // Se quiser que ela fale ao abrir, descomente:
+        // tts.speak(initialMessage)
     }
 
     fun sendMessage(userMessage: String) {
-        if (userMessage.isBlank()) return
-
         viewModelScope.launch {
-            _chatMessages.update { it + ChatMessage(userMessage, true) }
+            // 1. Adiciona mensagem do utilizador à lista (UI)
+            _chatMessages.update { it + ChatMessage(text = userMessage, isFromUser = true) }
             _isLoading.value = true
 
-            val result = chatbotRepository.postMessage(userMessage)
+            try {
+                // 2. Envia para o Gemini via Repository
+                // O objeto 'chat' vem do repositório
+                val response = chatbotRepository.chat.sendMessage(userMessage)
 
-            result.onSuccess { responseText ->
-                // CORRIGIDO: Verifica se a resposta não é nula ou vazia antes de usar
-                if (!responseText.isNullOrBlank()) {
-                    _chatMessages.update { currentList ->
-                        currentList + ChatMessage(responseText, false)
-                    }
+                // 3. Pega o texto da resposta (pode ser nulo)
+                val responseText: String? = response.text
+
+                // 4. Verifica e atualiza
+                if (responseText != null) {
+                    _chatMessages.update { it + ChatMessage(text = responseText, isFromUser = false) }
+                    tts.speak(responseText) // Fala a resposta
                 } else {
-                    // A resposta do n8n veio vazia, então mostramos um erro controlado
-                    Log.e("ChatbotViewModel", "n8n response was successful but the text is null or blank.")
-                    _chatMessages.update { it + ChatMessage("Desculpe, recebi uma resposta vazia. Verifique o workflow no n8n.", false) }
+                    val errorMsg = "Não entendi. Pode repetir?"
+                    _chatMessages.update { it + ChatMessage(text = errorMsg, isFromUser = false) }
+                    tts.speak(errorMsg)
                 }
-            }.onFailure { exception ->
-                Log.e("ChatbotViewModel", "n8n webhook call failed", exception)
-                _chatMessages.update { it + ChatMessage("Desculpe, ocorreu um erro técnico. Não consegui me conectar.", false) }
-            }
 
-            _isLoading.value = false
+            } catch (e: Exception) {
+                e.printStackTrace()
+                val errorMsg = "Sem conexão. Tente mais tarde."
+                _chatMessages.update { it + ChatMessage(text = errorMsg, isFromUser = false) }
+                tts.speak(errorMsg)
+            } finally {
+                _isLoading.value = false
+            }
         }
+    }
+
+    // Limpar o TTS quando sair da tela
+    override fun onCleared() {
+        tts.shutdown()
+        super.onCleared()
     }
 }
