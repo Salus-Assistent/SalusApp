@@ -73,7 +73,8 @@ fun HomeScreenCuidador(
                 // Adiciona padding em baixo para o conteúdo não ficar
                 // escondido atrás da barra (60dp da barra + 24dp de espaço)
                 .padding(bottom = 84.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             Spacer(modifier = Modifier.height(30.dp))
             HeaderCuidador(nomeUsuario = nomeUsuario)
@@ -157,7 +158,7 @@ private fun BotaoRegistros(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(125.dp)
+            .height(150.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(
                 color = MaterialTheme.colorScheme.surface
@@ -190,7 +191,7 @@ private fun VisorBPM(bpm: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(125.dp)
+            .height(150.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.horizontalGradient(
@@ -240,7 +241,7 @@ private fun BotaoNavegacaoPequeno(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.height(100.dp),
+        modifier = modifier.height(150.dp),
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -267,7 +268,7 @@ private fun BotaoChatbot(onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(150.dp),
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)

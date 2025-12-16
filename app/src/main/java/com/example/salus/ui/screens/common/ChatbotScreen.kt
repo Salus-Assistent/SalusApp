@@ -1,208 +1,203 @@
-package com.example.salus.ui.screens.common
+package com.example.salus.ui.screens.paciente
 
-import android.speech.tts.Voice
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.salus.R
 import com.example.salus.data.model.ChatMessage
-import com.example.salus.navigation.AppScreens
+import com.example.salus.navigation.AppScreens // <--- IMPORTANTE
 import com.example.salus.ui.components.MarkdownText
-import com.example.salus.ui.components.SalusBottomBar
-import com.example.salus.ui.components.SalusVoiceFAB
+import com.example.salus.ui.components.SalusBottomBar // <--- IMPORTANTE
 import com.example.salus.ui.theme.AzulGradienteFim
-import com.example.salus.ui.theme.AzulGradienteInicio
-import com.example.salus.ui.theme.CinzaIcones
 import com.example.salus.viewmodel.ChatbotViewModel
-import com.example.salus.viewmodel.VoiceCommandViewModel
+import java.util.Locale
 
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ChatbotScreen(
     navController: NavHostController,
-    viewModel: ChatbotViewModel = hiltViewModel(),
-    voiceViewModel: VoiceCommandViewModel = hiltViewModel()
+    viewModel: ChatbotViewModel = hiltViewModel()
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val chatMessages by viewModel.chatMessages.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
-    val chatMessages by viewModel.chatMessages.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    val isListening by voiceViewModel.isListening.collectAsStateWithLifecycle()
-
-    var userMessage by remember { mutableStateOf("") }
-
+    var textInput by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+
+    // --- LÓGICA DE VOZ ---
+    val voiceLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            val spokenText = results?.get(0)
+            if (!spokenText.isNullOrBlank()) {
+                viewModel.sendMessage(spokenText)
+                textInput = ""
+            }
+        }
+    }
 
     LaunchedEffect(chatMessages.size) {
         if (chatMessages.isNotEmpty()) {
-            listState.animateScrollToItem(chatMessages.size)
+            listState.animateScrollToItem(chatMessages.size - 1)
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
+    Scaffold(
+        topBar = { CenterAlignedTopAppBar(title = { Text("SIA") }) },
+
+        // --- ADICIONADO: A BARRA DE NAVEGAÇÃO ---
+        bottomBar = {
+            SalusBottomBar(
+                currentRoute = AppScreens.Chatbot.route, // Marca o botão Chatbot como ativo (se houver)
+                onHomeClick = { navController.navigate(AppScreens.HomePaciente.route) },
+                onCalendarClick = { navController.navigate(AppScreens.CalendarioPaciente.route) },
+                onNotificationsClick = { navController.navigate(AppScreens.NotificacoesPaciente.route) },
+                onSettingsClick = { navController.navigate(AppScreens.PerfilPaciente.route) }
+            )
+        },
+        // ----------------------------------------
+
+        modifier = Modifier.imePadding()
+    ) { paddingValues ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 80.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.sia),
-                contentDescription = "Avatar SalusAI",
-                modifier = Modifier
-                    .size(120.dp)
-                    .padding(top = 24.dp)
-                    .clip(RoundedCornerShape(24.dp))
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "SIA (Assistente Virtual)",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-
+            // LISTA DE MENSAGENS
             LazyColumn(
-                state = listState,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .weight(1f)
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                    .padding(horizontal = 16.dp),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp)
             ) {
                 items(chatMessages) { message ->
-                    MessageBubble(message = message)
+                    ChatBubble(message)
                 }
-
                 if (isLoading) {
                     item {
-                        MessageBubble(message = ChatMessage("...", false))
+                        Text("A SIA está a pensar...", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 12.dp, top = 8.dp))
                     }
                 }
             }
 
-            OutlinedTextField(
-                value = userMessage,
-                onValueChange = { userMessage = it },
-                placeholder = { Text("Digite sua pergunta aqui...") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(24.dp),
-                trailingIcon = {
-                    IconButton(
-                        onClick = {
-                            viewModel.sendMessage(userMessage)
-                            userMessage = ""
-                        },
-                        enabled = !isLoading && userMessage.isNotBlank()
-                    ) {
-                        Icon(Icons.Default.Send, contentDescription = "Enviar", tint = AzulGradienteFim)
-                    }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = AzulGradienteFim,
-                    unfocusedBorderColor = CinzaIcones
-                )
-            )
-        }
+            // --- ÁREA DE INPUT (Fica logo acima da BottomBar) ---
+            Surface(
+                tonalElevation = 5.dp,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(12.dp)
+                    // navigationBarsPadding removido daqui pois o BottomBar já cuida disso
+                    ,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // CAMPO DE TEXTO
+                    OutlinedTextField(
+                        value = textInput,
+                        onValueChange = { textInput = it },
+                        placeholder = { Text("Digite sua dúvida...") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 56.dp),
+                        shape = RoundedCornerShape(28.dp),
+                        maxLines = 3
+                    )
 
-        SalusBottomBar(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            currentRoute = currentRoute,
-            onHomeClick = { navController.navigate(AppScreens.HomePaciente.route) },
-            onCalendarClick = { navController.navigate(AppScreens.CalendarioPaciente.route) },
-            onNotificationsClick = { navController.navigate(AppScreens.NotificacoesPaciente.route) },
-            onSettingsClick = { navController.navigate(AppScreens.PerfilPaciente.route) }
-        )
-        SalusVoiceFAB(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = (-30).dp),
-            onClick = { voiceViewModel.startListening() },
-            isListening = isListening
-        )
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    // BOTÃO DINÂMICO (Mic / Send)
+                    val isMicMode = textInput.isBlank()
+
+                    FloatingActionButton(
+                        onClick = {
+                            if (isMicMode) {
+                                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, "pt-BR")
+                                    putExtra(RecognizerIntent.EXTRA_PROMPT, "Pode falar...")
+                                }
+                                voiceLauncher.launch(intent)
+                            } else {
+                                if (!isLoading) {
+                                    viewModel.sendMessage(textInput)
+                                    textInput = ""
+                                }
+                            }
+                        },
+                        containerColor = AzulGradienteFim,
+                        contentColor = Color.White,
+                        shape = CircleShape,
+                        modifier = Modifier.size(75.dp)
+                    ) {
+                        AnimatedContent(targetState = isMicMode, label = "icon_anim") { showMic ->
+                            if (showMic) {
+                                Icon(
+                                    imageVector = Icons.Default.Mic,
+                                    contentDescription = "Falar",
+                                    modifier = Modifier.size(36.dp)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = "Enviar",
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
+// (Seu ChatBubble com MarkdownText continua aqui igual)
 @Composable
-private fun MessageBubble(message: ChatMessage) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = if (message.isFromUser) Arrangement.End else Arrangement.Start
-    ) {
-        Card(
-            shape = RoundedCornerShape(
-                topStart = 16.dp,
-                topEnd = 16.dp,
-                bottomStart = if (message.isFromUser) 16.dp else 0.dp,
-                bottomEnd = if (message.isFromUser) 0.dp else 16.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = if (message.isFromUser) AzulGradienteInicio else MaterialTheme.colorScheme.surfaceVariant
-            ),
-            modifier = Modifier.widthIn(max = 300.dp)
+fun ChatBubble(message: ChatMessage) {
+    val isUser = message.isFromUser
+    val align = if (isUser) Alignment.End else Alignment.Start
+    val containerColor = if (isUser) MaterialTheme.colorScheme.surfaceVariant else AzulGradienteFim.copy(alpha = 0.15f)
+
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = align) {
+        Surface(
+            color = containerColor,
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = if (isUser) 16.dp else 2.dp, bottomEnd = if (isUser) 2.dp else 16.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
         ) {
-            if (message.isFromUser) {
-                Text(
-                    text = message.text,
-                    modifier = Modifier.padding(12.dp),
-                    color = Color.White
-                )
-            } else {
-                MarkdownText(
-                    text = message.text,
-                    modifier = Modifier.padding(12.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            MarkdownText(
+                text = message.text,
+                modifier = Modifier.padding(12.dp),
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }

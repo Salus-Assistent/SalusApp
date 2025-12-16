@@ -32,9 +32,7 @@ fun NavGraph(
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
     ) {
-        // --- Fluxo Inicial ---
-        // (O seu código para Splash, Onboarding, Login, SignUp, ForgotPassword 1 & 2
-        // vem aqui, exatamente como você o tinha)
+
         composable(AppScreens.Splash.route) {
             SplashScreen(
                 onTimeout = {
@@ -202,8 +200,7 @@ fun NavGraph(
             }
 
 
-            // Não precisa de duplicar o Chatbot, a menos que AppScreens.Chatbot seja diferente
+
         }
-        // ===== FIM DO FLUXO CUIDADOR =====
     }
 }

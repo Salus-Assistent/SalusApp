@@ -80,8 +80,8 @@ fun FASTScreen(navController: NavHostController) {
                 botaoNormalTexto = "Sorriso Normal",
                 selecao = fastRosto,
                 onSintomaClick = {
-                    fastRosto = false
-                    onSintomaDetectado()
+//                    fastRosto = false
+//                    onSintomaDetectado()
                 },
                 onNormalClick = { fastRosto = true }
             )
@@ -95,8 +95,8 @@ fun FASTScreen(navController: NavHostController) {
                 botaoNormalTexto = "Ambos Levantam Iguais",
                 selecao = fastBracos,
                 onSintomaClick = {
-                    fastBracos = false
-                    onSintomaDetectado()
+//                    fastBracos = false
+//                    onSintomaDetectado()
                 },
                 onNormalClick = { fastBracos = true }
             )
@@ -111,8 +111,8 @@ fun FASTScreen(navController: NavHostController) {
                 botaoNormalTexto = "Fala Normal",
                 selecao = fastFala,
                 onSintomaClick = {
-                    fastFala = false
-                    onSintomaDetectado()
+//                    fastFala = false
+//                    onSintomaDetectado()
                 },
                 onNormalClick = { fastFala = true }
             )

@@ -4,17 +4,32 @@ package com.example.salus.ui.screens.paciente
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.Medication
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,25 +37,27 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.salus.R
-import com.example.salus.navigation.AppScreens
-import com.example.salus.ui.components.SalusBottomBar // <-- Importa o componente
-import com.example.salus.ui.theme.*
-import com.example.salus.viewmodel.HomePacienteViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import com.example.salus.domain.AlertManager
+import com.example.salus.navigation.AppScreens
+import com.example.salus.ui.components.SalusBottomBar
 import com.example.salus.ui.components.SalusVoiceFAB
+import com.example.salus.ui.theme.AzulGradienteFim
+import com.example.salus.ui.theme.AzulGradienteInicio
+import com.example.salus.ui.theme.SalusTheme
+import com.example.salus.ui.theme.VermelhoGradienteFim
+import com.example.salus.ui.theme.VermelhoGradienteInicio
+import com.example.salus.viewmodel.HomePacienteViewModel
 import com.example.salus.viewmodel.VoiceCommandViewModel
 
 @Composable
@@ -72,7 +89,8 @@ fun HomeScreenPaciente(
                 // Adiciona padding em baixo para o conteúdo não ficar
                 // escondido atrás da barra (60dp da barra + 24dp de espaço)
                 .padding(bottom = 84.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             Spacer(modifier = Modifier.height(30.dp))
             HeaderPaciente(nomeUsuario = nomeUsuario)
@@ -134,9 +152,7 @@ fun HomeScreenPaciente(
     }
 }
 
-// --- Cole aqui os seus Componentes Internos Privados ---
-// (HeaderPaciente, BotaoAlerta, VisorBPM, BotaoNavegacaoPequeno, BotaoChatbot)
-// ...
+
 @Composable
 private fun HeaderPaciente(nomeUsuario: String) {
     Column(
@@ -162,7 +178,7 @@ private fun BotaoAlerta(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(125.dp)
+            .height(150.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.horizontalGradient(
@@ -197,7 +213,7 @@ private fun VisorBPM(bpm: Int, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(125.dp)
+            .height(150.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.horizontalGradient(
@@ -247,7 +263,7 @@ private fun BotaoNavegacaoPequeno(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.height(100.dp),
+        modifier = modifier.height(150.dp),
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -274,7 +290,7 @@ private fun BotaoChatbot(onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(150.dp),
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)

@@ -114,6 +114,7 @@ dependencies {
 
     // ----- SMS -----
     implementation(libs.accompanist.permissions)
+
 }
 
 kapt {

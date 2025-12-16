@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://kaelkj.app.n8n.cloud/"
+    private const val BASE_URL = "https://kgekenji.app.n8n.cloud/"
 
     @Provides
     @Singleton

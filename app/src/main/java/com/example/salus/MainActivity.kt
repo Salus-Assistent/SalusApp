@@ -16,6 +16,9 @@ import com.example.salus.navigation.AppScreens
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val windowInsetsController = androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
+        windowInsetsController.systemBarsBehavior = androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        windowInsetsController.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars())
         val startDestination = intent.getStringExtra("START_DESTINATION")
             ?: AppScreens.Splash.route
         setContent {

@@ -133,7 +133,7 @@ fun AlertaScreenCuidador(
                         )
                     }
                 }
-                // TODO: Adicionar botão "Ligar 192"
+
             }
         }
     }
